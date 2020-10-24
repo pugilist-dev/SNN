@@ -72,7 +72,16 @@ ip_weight = np.array([[5,2],[2,6]])
 structure = create_structure(layers, neurons_per_layer, output_neurons, ip_weight, layer_weights, output_weight)
 
 layer = 0
-spike = []
 for i in range(len(input1)):
     for j in range(neurons_per_layer):
         structure[layer][j].fire([input1[i], input2[i]], i)
+
+layer = 1
+for i in range(len(input1)):
+    for j in range(neurons_per_layer):
+        structure[layer][j].fire([structure[0][0].spikes[i], structure[0][1].spikes[i]], i)
+
+layer = 2
+for i in range(len(input1)):
+    for j in range(output_neurons):
+        structure[layer][j].fire([structure[layer-1][0].spikes[i], structure[layer-1][1].spikes[i]], i)
