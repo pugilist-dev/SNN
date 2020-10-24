@@ -9,6 +9,7 @@ Created on Fri Oct 23 22:59:27 2020
 import numpy as np
 from scipy.io import loadmat
 from lif_neuron import lif_neuron
+import matplotlib.pyplot as plt
 
 dataset = loadmat('mnist.mat')
 
@@ -61,13 +62,13 @@ layers = 3
 neurons_per_layer = 2
 output_neurons = 1
 
-#ip_weight = 0.01 * np.random.randn(2,2)
-layer_weights = 0.01 * np.random.randn(2,2)
-output_weight= 0.01*np.random.randn(1,2)
+# ip_weight = 0.01 * np.random.randn(2,2)
+# layer_weights = 0.01 * np.random.randn(2,2)
+# output_weight= 0.01*np.random.randn(1,2)
 
-ip_weight = np.array([[5,2],[2,6]])
-# layer_weights = np.array([[50, 50], [50, 50]])
-# output_weight = np.array([50,50])
+ip_weight = np.array([[6.83553207, -60.52424094], [4.70213729, -60.66205472]])
+layer_weights = np.array([[12.83553207, -50.52424094], [50.70213729, 50.66205472]])
+output_weight = np.array([-9.5020065,10.44247489])
 
 structure = create_structure(layers, neurons_per_layer, output_neurons, ip_weight, layer_weights, output_weight)
 
@@ -85,3 +86,8 @@ layer = 2
 for i in range(len(input1)):
     for j in range(output_neurons):
         structure[layer][j].fire([structure[layer-1][0].spikes[i], structure[layer-1][1].spikes[i]], i)
+        
+fig, a = plt.subplots(2,2)
+a[0][0].plot(np.arange(start=0, stop =800, step = 1), input1)
+a[0][1].plot(np.arange(start=0, stop=800, step = 1), input2)
+a[1][1].plot(np.arange(start=0, stop = 800, step =1), structure[2][0].spikes)
