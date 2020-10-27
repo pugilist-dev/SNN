@@ -10,6 +10,7 @@ import numpy as np
 from scipy.io import loadmat
 from lif_neuron import lif_neuron
 import matplotlib.pyplot as plt
+import math
 
 dataset = loadmat('mnist.mat')
 
@@ -57,10 +58,29 @@ def create_structure(layers, neurons_per_layer,output_neurons, ip_weight, layer_
             print("Invalid parameters for teh structure")
     return ganglion
             
+def freq(tw,x,fmax): #provide a time window, flattened image (U_train[0]), and max frequency
+    out=np.zeros((int(N),int(win[1]-win[0]))) # initialize output matrix
+    
+    for i in range(len((x))): # for each pixel in image
+        spikes = round(((float((win[1]-win[0])))*fmax)*x[i]) # calculate the number of spikes
+        spikeprob=spikes/float((win[1]-win[0])) # calculate the spike probability
+        out[i]=np.random.choice(np.arange(0, 2), size=(win[1]-win[0]), replace=True, p=[1-spikeprob, spikeprob])
+        # randomly populate output matrix with spikes according to spike probability
+    return out
 
 layers = 3
 neurons_per_layer = 2
 output_neurons = 1
+
+win=[0,200] # input window in milliseconds
+fm = 0.2 # max frequency 200Hz
+
+# Verify the correct operation of frequency function
+# r = number of spikes proportional to the greyscale magnitude of input pixels
+W=freq(win,U_train[1],fm)
+r=np.zeros((int(N)))
+for e in range(N):
+    r[e]=sum(W[e])
 
 # ip_weight = 0.01 * np.random.randn(2,2)
 # layer_weights = 0.01 * np.random.randn(2,2)
@@ -69,6 +89,7 @@ output_neurons = 1
 ip_weight = np.array([[6.83553207, -60.52424094], [4.70213729, -60.66205472]])
 layer_weights = np.array([[12.83553207, -50.52424094], [50.70213729, 50.66205472]])
 output_weight = np.array([-9.5020065,10.44247489])
+
 
 structure = create_structure(layers, neurons_per_layer, output_neurons, ip_weight, layer_weights, output_weight)
 
@@ -89,5 +110,5 @@ for i in range(len(input1)):
         
 fig, a = plt.subplots(2,2)
 a[0][0].plot(np.arange(start=0, stop =800, step = 1), input1)
-a[0][1].plot(np.arange(start=0, stop=800, step = 1), input2)
+a[0][1].plot(np.arange(start=0, stop =800, step = 1), input2)
 a[1][1].plot(np.arange(start=0, stop = 800, step =1), structure[2][0].spikes)
